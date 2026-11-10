@@ -1,6 +1,6 @@
 # Jira Sprint Task Viewer
 
-Lightweight developer tool to view **active sprint** Jira issues, with filtering and CSV/Excel export.
+Lightweight developer tool to view Jira sprint issues (active and closed), with filtering and CSV/Excel export.
 
 ## Stack
 

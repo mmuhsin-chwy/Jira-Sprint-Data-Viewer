@@ -23,4 +23,9 @@ export interface SprintReportMeta {
   userDisplayName: string;
   boardName: string;
   sprintName: string;
+  sprintId?: number | null;
+  sprintState?: string | null;
+  sprintStartDate?: string | null;
+  sprintEndDate?: string | null;
+  totalTasksLoaded?: number;
 }

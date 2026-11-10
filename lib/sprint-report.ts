@@ -1,6 +1,10 @@
 import type { UserConfigOverrides } from "@/lib/jira/merge-config";
 import { ensureJiraAuth } from "@/lib/jira/auth-refresh";
-import { getActiveSprint, getBoard } from "@/lib/jira/sprints";
+import {
+  getActiveSprint,
+  getBoard,
+  getSprint,
+} from "@/lib/jira/sprints";
 import {
   fetchSprintIssues,
   getCurrentUser,
@@ -11,6 +15,7 @@ import { resolveAppConfig } from "@/lib/jira/env-config";
 import { issueMatchesProjectKeys } from "@/lib/jira/project-keys";
 import { isExcludedJiraStatus } from "@/lib/jira/status";
 import type { SprintReportMeta, SprintTask } from "@/types/task";
+import type { JiraSprint } from "@/types/jira";
 
 export interface SprintReportResponse {
   meta: SprintReportMeta & {
@@ -20,8 +25,22 @@ export interface SprintReportResponse {
   tasks: SprintTask[];
 }
 
+async function resolveSprint(
+  auth: Awaited<ReturnType<typeof ensureJiraAuth>>,
+  boardId: number,
+  sprintId?: number | null,
+): Promise<JiraSprint | null> {
+  if (!auth) return null;
+  if (sprintId != null) {
+    const sprint = await getSprint(auth, sprintId);
+    if (sprint) return sprint;
+  }
+  return getActiveSprint(auth, boardId);
+}
+
 export async function buildSprintReport(
   userConfig?: UserConfigOverrides | null,
+  sprintId?: number | null,
 ): Promise<
   | { ok: true; data: SprintReportResponse }
   | { ok: false; status: number; message: string }
@@ -67,12 +86,16 @@ export async function buildSprintReport(
   const user = auth.user ?? (await getCurrentUser(auth));
 
   const boardId = config.boardId;
-  const sprint = await getActiveSprint(auth, boardId);
+  const sprint = await resolveSprint(auth, boardId, sprintId);
   if (!sprint) {
+    const label =
+      sprintId != null
+        ? `Sprint ${sprintId} was not found.`
+        : "No active sprint found for this board.";
     return {
       ok: false,
       status: 404,
-      message: "No active sprint found for this board.",
+      message: label,
     };
   }
 
@@ -101,6 +124,10 @@ export async function buildSprintReport(
         boardName: board?.name ?? `Board ${boardId}`,
         sprintName: sprint.name,
         sprintId: sprint.id,
+        sprintState: sprint.state ?? null,
+        sprintStartDate: sprint.startDate ?? null,
+        sprintEndDate: sprint.endDate ?? null,
+        totalTasksLoaded: tasks.length,
         currentUserAccountId: user.accountId,
       },
       tasks,
