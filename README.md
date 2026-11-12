@@ -49,7 +49,7 @@ A GitHub token is needed only for additional PR enrichment, such as LOC addition
 
 1. Open [GitHub Fine-grained Personal Access Token settings](https://github.com/settings/personal-access-tokens/new).
 2. Set **Token name** to `Jira Sprint Task Viewer`.
-3. Select your GitHub organization as the resource owner.
+3. Select your account as the resource owner.
 4. Select the repositories containing the PRs you want to access.
 5. Configure the following repository permissions:
 
