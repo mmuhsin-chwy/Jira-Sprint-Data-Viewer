@@ -2,6 +2,14 @@
 
 Lightweight developer tool to view Jira sprint issues (active and closed), with filtering and CSV/Excel export.
 
+
+
+https://github.com/user-attachments/assets/60d9bf1f-2e4e-4e73-8ca6-93f2b5ecd3e8
+
+
+
+
+
 ## Stack
 
 - Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS
